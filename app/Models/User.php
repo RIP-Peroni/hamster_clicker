@@ -33,4 +33,8 @@ class User extends Authenticatable implements PasskeyUser
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+    public function clicks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Click::class);
+    }
 }
