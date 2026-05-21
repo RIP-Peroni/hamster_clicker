@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 
@@ -15,17 +15,14 @@ const stats = ref(props.stats)
 const handleClick = async () => {
     router.post('/api/clicks', {}, {
         preserveState: true,
+        preserveScroll: true,
         onSuccess: () => {
-            router.get('/dashboard', {}, {
-                preserveState: true,
-                preserveScroll: true, //todo скролл почему-то всё равно срабатывает сбрасывается
-                only: ['stats'],
-                onSuccess: (page) => {
-                    if (page.props.stats) {
-                        stats.value = page.props.stats
-                    }
-                }
-            })
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(newStats => {
+                    stats.value = newStats
+                })
+                .catch(error => console.error('Error fetching stats:', error))
         },
         onError: (errors) => {
             console.error('Error saving click:', errors)
