@@ -18,7 +18,7 @@ services:
       - gotenberg
 
   db:
-    image: postgres:17-alpine
+    image: postgres:18.4-alpine
     container_name: hamster_db
     restart: unless-stopped
     environment:
@@ -26,7 +26,7 @@ services:
       POSTGRES_USER: hamster_user
       POSTGRES_PASSWORD: secret
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
     ports:
       - "5432:5432"
     networks:

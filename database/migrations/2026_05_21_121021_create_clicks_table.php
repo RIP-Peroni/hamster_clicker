@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['user_id', 'clicked_at']);
+            $table->index('clicked_at');
         });
     }
 
