@@ -11,19 +11,23 @@ RUN apk add --no-cache \
 
 RUN docker-php-ext-install pdo_pgsql
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
 
-COPY . .
-
+COPY composer.json composer.lock ./
 RUN composer install --optimize-autoloader --no-interaction
+
+COPY . .
 
 RUN npm install && npm run build
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-EXPOSE 80
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-CMD ["docker-entrypoint.sh"]
+EXPOSE 8000
+
+ENTRYPOINT ["docker-entrypoint.sh"]
