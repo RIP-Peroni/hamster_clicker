@@ -1,0 +1,53 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hamster_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    # volumes:
+    #   - ./:/var/www/html
+    ports:
+      - "8080:8000"
+    networks:
+      - hamster-network
+    depends_on:
+      - db
+      - gotenberg
+
+  db:
+    image: postgres:18.4-alpine
+    container_name: hamster_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hamster
+      POSTGRES_USER: hamster_user
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - hamster-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hamster_user -d hamster"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    container_name: hamster_gotenberg
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - hamster-network
+
+networks:
+  hamster-network:
+    driver: bridge
+
+volumes:
+  pgdata:
