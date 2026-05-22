@@ -15,8 +15,6 @@
 
 2. Настройка окружения
 
-```cp .env.example .env```
-
 ```docker-compose up -d --build```
 
 3. Выполнение миграций
